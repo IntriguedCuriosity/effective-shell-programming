@@ -1,0 +1,20 @@
+#!/bin/bash
+touch filename.txt
+while read line
+do
+        state=$(echo $line | awk -F '_' '{print $2}')
+        dt=$(echo $line | awk -F\_ '{print $10}')
+        tmst=$(echo $line | awk -F\_ '{print $9}')
+if ! grep "${state}" filename.txt ;
+then
+        echo $line >> filename.txt
+elif [[ "${dt}" -gt $(grep ${state} filename.txt | awk -F\_ '{print $10}' ) ]]
+then
+        sed -i "#n s/.$state./$line/" filename.txt
+elif [[ "${tmst}" -gt $(grep ${state} filename.txt | awk -F\_ '{print $9}' ) ]]
+then
+        sed -i "s/.$state./$line/" filename.txt
+fi
+done < file.txt
+cat filename.txt
+rm filename.txt
